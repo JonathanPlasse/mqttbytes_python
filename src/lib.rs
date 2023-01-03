@@ -1,7 +1,10 @@
-use pyo3::create_exception;
 use pyo3::exceptions::PyException;
 use pyo3::prelude::*;
 use pyo3::types::PyBytes;
+use pyo3::{create_exception, wrap_pymodule};
+
+mod convert;
+mod v4;
 
 create_exception!(
     mqttbytes,
@@ -10,7 +13,7 @@ create_exception!(
     "Error during serialization and deserialization."
 );
 
-pub struct WrapperMqttBytesError(::mqttbytes::Error);
+struct WrapperMqttBytesError(::mqttbytes::Error);
 
 impl From<::mqttbytes::Error> for WrapperMqttBytesError {
     fn from(err: ::mqttbytes::Error) -> Self {
@@ -37,6 +40,7 @@ impl From<WrapperMqttBytesError> for PyErr {
 /// http://docs.oasis-open.org/mqtt/mqtt/v3.1.1/os/mqtt-v3.1.1-os.html#_Figure_2.2_-
 /// ```
 #[pyclass]
+#[derive(Clone, Copy)]
 struct FixedHeader(::mqttbytes::FixedHeader);
 
 #[pymethods]
@@ -66,7 +70,7 @@ impl From<::mqttbytes::FixedHeader> for FixedHeader {
 /// MQTT packet type.
 #[pyclass]
 #[repr(u8)]
-pub enum PacketType {
+enum PacketType {
     Connect = 1,
     ConnAck,
     Publish,
@@ -105,7 +109,7 @@ impl From<::mqttbytes::PacketType> for PacketType {
 }
 
 #[pyclass]
-pub enum Protocol {
+enum Protocol {
     V4,
     V5,
 }
@@ -114,7 +118,7 @@ pub enum Protocol {
 #[allow(clippy::enum_variant_names)]
 #[pyclass]
 #[repr(u8)]
-pub enum QoS {
+enum QoS {
     AtMostOnce = 0,
     AtLeastOnce = 1,
     ExactlyOnce = 2,
@@ -180,6 +184,7 @@ fn valid_topic(topic: &str) -> bool {
 
 #[pymodule]
 fn mqttbytes(_py: Python, m: &PyModule) -> PyResult<()> {
+    m.add_wrapped(wrap_pymodule!(v4::v4))?;
     m.add_class::<FixedHeader>()?;
     m.add("MqttBytesError", _py.get_type::<MqttBytesError>())?;
     m.add_class::<PacketType>()?;
