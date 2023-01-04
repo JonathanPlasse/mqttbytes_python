@@ -8,6 +8,7 @@ use pubcomp::PubComp;
 use publish::Publish;
 use pubrec::PubRec;
 use pubrel::PubRel;
+use suback::SubAck;
 
 mod connack;
 mod connect;
@@ -17,6 +18,7 @@ mod pubcomp;
 mod publish;
 mod pubrec;
 mod pubrel;
+mod suback;
 
 #[pymodule]
 pub fn v4(_py: Python, m: &PyModule) -> PyResult<()> {
@@ -31,6 +33,7 @@ pub fn v4(_py: Python, m: &PyModule) -> PyResult<()> {
     m.add_class::<PubRec>()?;
     m.add_class::<PubRel>()?;
     m.add_class::<Publish>()?;
+    m.add_class::<SubAck>()?;
     m.add_class::<ConnectReturnCode>()?;
     Ok(())
 }
