@@ -9,26 +9,7 @@ use crate::{FixedHeader, Protocol, QoS, WrapperMqttBytesError};
 
 /// Connection packet initiated by the client
 #[pyclass]
-pub struct Connect {
-    /// Mqtt protocol version
-    #[pyo3(get, set)]
-    pub protocol: Protocol,
-    /// Mqtt keep alive time
-    #[pyo3(get, set)]
-    pub keep_alive: u16,
-    /// Client Id
-    #[pyo3(get, set)]
-    pub client_id: String,
-    /// Clean session. Asks the broker to clear previous state
-    #[pyo3(get, set)]
-    pub clean_session: bool,
-    /// Will that broker needs to publish when the client disconnects
-    #[pyo3(get, set)]
-    pub last_will: Option<LastWill>,
-    /// Login credentials
-    #[pyo3(get)]
-    pub login: Option<Login>,
-}
+pub struct Connect(::mqttbytes::v4::Connect);
 
 #[pymethods]
 impl Connect {
@@ -37,12 +18,8 @@ impl Connect {
         ::mqttbytes::v4::Connect::new(id).into()
     }
 
-    fn set_login(&mut self, u: String, p: String) {
-        *self = ::mqttbytes::v4::Connect::set_login(&mut self.into(), u, p).into();
-    }
-
     fn __len__(&self) -> usize {
-        ::mqttbytes::v4::Connect::len(&self.into())
+        self.0.len()
     }
 
     #[staticmethod]
@@ -51,75 +28,80 @@ impl Connect {
     }
 
     fn write(&self, buffer: &PyByteArray) -> PyResult<usize> {
-        wrap_packet_write(&self.into(), buffer, ::mqttbytes::v4::Connect::write)
+        wrap_packet_write(&self.0, buffer, ::mqttbytes::v4::Connect::write)
+    }
+
+    #[getter]
+    fn get_protocol(&self) -> Protocol {
+        self.0.protocol.into()
+    }
+
+    #[setter]
+    fn set_protocol(&mut self, protocol: Protocol) {
+        self.0.protocol = protocol.into();
+    }
+
+    #[getter]
+    fn get_keep_alive(&self) -> u16 {
+        self.0.keep_alive
+    }
+
+    #[setter]
+    fn set_keep_alive(&mut self, keep_alive: u16) {
+        self.0.keep_alive = keep_alive;
+    }
+
+    #[getter]
+    fn get_client_id(&self) -> String {
+        self.0.client_id.clone()
+    }
+
+    #[setter]
+    fn set_client_id(&mut self, client_id: String) {
+        self.0.client_id = client_id;
+    }
+
+    #[getter]
+    fn get_clean_session(&self) -> bool {
+        self.0.clean_session
+    }
+
+    #[setter]
+    fn set_clean_session(&mut self, clean_session: bool) {
+        self.0.clean_session = clean_session;
+    }
+
+    #[getter]
+    fn get_last_will(&self) -> Option<LastWill> {
+        self.0.last_will.clone().map(Into::into)
+    }
+
+    #[setter]
+    fn set_last_will(&mut self, last_will: Option<LastWill>) {
+        self.0.last_will = last_will.map(|last_will| last_will.0);
+    }
+
+    #[getter]
+    fn get_login(&self) -> Option<Login> {
+        self.0.login.clone().map(Into::into)
+    }
+
+    #[setter]
+    fn set_login(&mut self, login: Option<Login>) {
+        self.0.login = login.map(|login| login.0);
     }
 }
 
 impl From<::mqttbytes::v4::Connect> for Connect {
     fn from(connect: ::mqttbytes::v4::Connect) -> Self {
-        Connect {
-            protocol: connect.protocol.into(),
-            keep_alive: connect.keep_alive,
-            client_id: connect.client_id,
-            clean_session: connect.clean_session,
-            last_will: connect.last_will.map(Into::into),
-            login: connect.login.map(Into::into),
-        }
-    }
-}
-
-impl From<&mut ::mqttbytes::v4::Connect> for Connect {
-    fn from(connect: &mut ::mqttbytes::v4::Connect) -> Self {
-        Connect {
-            protocol: connect.protocol.into(),
-            keep_alive: connect.keep_alive,
-            client_id: connect.client_id.clone(),
-            clean_session: connect.clean_session,
-            last_will: connect.last_will.as_ref().map(Into::into),
-            login: connect.login.as_ref().map(Into::into),
-        }
-    }
-}
-
-impl From<&Connect> for ::mqttbytes::v4::Connect {
-    fn from(connect: &Connect) -> Self {
-        ::mqttbytes::v4::Connect {
-            protocol: connect.protocol.into(),
-            keep_alive: connect.keep_alive,
-            client_id: connect.client_id.clone(),
-            clean_session: connect.clean_session,
-            last_will: connect.last_will.as_ref().map(Into::into),
-            login: connect.login.as_ref().map(Into::into),
-        }
-    }
-}
-
-impl From<&mut Connect> for ::mqttbytes::v4::Connect {
-    fn from(connect: &mut Connect) -> Self {
-        ::mqttbytes::v4::Connect {
-            protocol: connect.protocol.into(),
-            keep_alive: connect.keep_alive,
-            client_id: connect.client_id.clone(),
-            clean_session: connect.clean_session,
-            last_will: connect.last_will.as_ref().map(Into::into),
-            login: connect.login.as_ref().map(Into::into),
-        }
+        Self(connect)
     }
 }
 
 /// LastWill that broker forwards on behalf of the client
 #[pyclass]
 #[derive(Clone)]
-pub struct LastWill {
-    #[pyo3(get, set)]
-    pub topic: String,
-    #[pyo3(get, set)]
-    pub message: Vec<u8>,
-    #[pyo3(get, set)]
-    pub qos: QoS,
-    #[pyo3(get, set)]
-    pub retain: bool,
-}
+pub struct LastWill(::mqttbytes::v4::LastWill);
 
 #[pymethods]
 impl LastWill {
@@ -127,49 +109,57 @@ impl LastWill {
     fn new(topic: String, payload: Vec<u8>, qos: QoS, retain: bool) -> Self {
         ::mqttbytes::v4::LastWill::new(topic, payload, qos.into(), retain).into()
     }
+
+    #[getter]
+    fn get_topic(&self) -> String {
+        self.0.topic.clone()
+    }
+
+    #[setter]
+    fn set_topic(&mut self, topic: String) {
+        self.0.topic = topic;
+    }
+
+    #[getter]
+    fn get_message(&self) -> Vec<u8> {
+        self.0.message.to_vec()
+    }
+
+    #[setter]
+    fn set_message(&mut self, message: Vec<u8>) {
+        self.0.message = Bytes::from(message);
+    }
+
+    #[getter]
+    fn get_qos(&self) -> QoS {
+        self.0.qos.into()
+    }
+
+    #[setter]
+    fn set_qos(&mut self, qos: QoS) {
+        self.0.qos = qos.into();
+    }
+
+    #[getter]
+    fn get_retain(&self) -> bool {
+        self.0.retain
+    }
+
+    #[setter]
+    fn set_retain(&mut self, retain: bool) {
+        self.0.retain = retain;
+    }
 }
 
 impl From<::mqttbytes::v4::LastWill> for LastWill {
     fn from(last_will: ::mqttbytes::v4::LastWill) -> Self {
-        LastWill {
-            topic: last_will.topic,
-            message: last_will.message.to_vec(),
-            qos: last_will.qos.into(),
-            retain: last_will.retain,
-        }
-    }
-}
-
-impl From<&::mqttbytes::v4::LastWill> for LastWill {
-    fn from(last_will: &::mqttbytes::v4::LastWill) -> Self {
-        LastWill {
-            topic: last_will.topic.clone(),
-            message: last_will.message.to_vec(),
-            qos: last_will.qos.into(),
-            retain: last_will.retain,
-        }
-    }
-}
-
-impl From<&LastWill> for ::mqttbytes::v4::LastWill {
-    fn from(last_will: &LastWill) -> Self {
-        ::mqttbytes::v4::LastWill {
-            topic: last_will.topic.clone(),
-            message: Bytes::from(last_will.message.clone()),
-            qos: last_will.qos.into(),
-            retain: last_will.retain,
-        }
+        Self(last_will)
     }
 }
 
 #[pyclass]
 #[derive(Clone)]
-pub struct Login {
-    #[pyo3(get, set)]
-    pub username: String,
-    #[pyo3(get, set)]
-    pub password: String,
-}
+pub struct Login(::mqttbytes::v4::Login);
 
 #[pymethods]
 impl Login {
@@ -179,33 +169,32 @@ impl Login {
     }
 
     fn validate(&self, username: String, password: String) -> bool {
-        ::mqttbytes::v4::Login::validate(&self.into(), &username, &password)
+        self.0.validate(&username, &password)
+    }
+
+    #[getter]
+    fn get_username(&self) -> String {
+        self.0.username.clone()
+    }
+
+    #[setter]
+    fn set_username(&mut self, username: String) {
+        self.0.username = username;
+    }
+
+    #[getter]
+    fn get_password(&self) -> String {
+        self.0.password.clone()
+    }
+
+    #[setter]
+    fn set_password(&mut self, password: String) {
+        self.0.password = password;
     }
 }
 
 impl From<::mqttbytes::v4::Login> for Login {
     fn from(login: ::mqttbytes::v4::Login) -> Self {
-        Login {
-            username: login.username,
-            password: login.password,
-        }
-    }
-}
-
-impl From<&::mqttbytes::v4::Login> for Login {
-    fn from(login: &::mqttbytes::v4::Login) -> Self {
-        Login {
-            username: login.username.clone(),
-            password: login.password.clone(),
-        }
-    }
-}
-
-impl From<&Login> for ::mqttbytes::v4::Login {
-    fn from(login: &Login) -> Self {
-        ::mqttbytes::v4::Login {
-            username: login.username.clone(),
-            password: login.password.clone(),
-        }
+        Self(login)
     }
 }

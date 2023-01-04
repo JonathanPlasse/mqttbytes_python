@@ -8,12 +8,7 @@ use crate::{FixedHeader, WrapperMqttBytesError};
 
 /// Acknowledgement to connect packet
 #[pyclass]
-pub struct ConnAck {
-    #[pyo3(get, set)]
-    session_present: bool,
-    #[pyo3(get, set)]
-    code: ConnectReturnCode,
-}
+pub struct ConnAck(::mqttbytes::v4::ConnAck);
 
 #[pymethods]
 impl ConnAck {
@@ -28,31 +23,39 @@ impl ConnAck {
     }
 
     fn write(&self, buffer: &PyByteArray) -> PyResult<usize> {
-        wrap_packet_write(&self.into(), buffer, ::mqttbytes::v4::ConnAck::write)
+        wrap_packet_write(&self.0, buffer, ::mqttbytes::v4::ConnAck::write)
+    }
+
+    #[getter]
+    fn get_session_present(&self) -> bool {
+        self.0.session_present
+    }
+
+    #[setter]
+    fn set_session_present(&mut self, session_present: bool) {
+        self.0.session_present = session_present;
+    }
+
+    #[getter]
+    fn get_code(&self) -> ConnectReturnCode {
+        self.0.code.into()
+    }
+
+    #[setter]
+    fn set_code(&mut self, code: ConnectReturnCode) {
+        self.0.code = code.into();
     }
 }
 
 impl From<::mqttbytes::v4::ConnAck> for ConnAck {
-    fn from(conn_ack: ::mqttbytes::v4::ConnAck) -> Self {
-        ConnAck {
-            session_present: conn_ack.session_present,
-            code: conn_ack.code.into(),
-        }
-    }
-}
-
-impl From<&ConnAck> for ::mqttbytes::v4::ConnAck {
-    fn from(conn_ack: &ConnAck) -> Self {
-        ::mqttbytes::v4::ConnAck {
-            session_present: conn_ack.session_present,
-            code: conn_ack.code.into(),
-        }
+    fn from(connack: ::mqttbytes::v4::ConnAck) -> Self {
+        Self(connack)
     }
 }
 
 /// Return code in connack
 #[pyclass]
-#[derive(Clone, Copy)]
+#[derive(Clone)]
 #[repr(u8)]
 pub enum ConnectReturnCode {
     Success = 0,

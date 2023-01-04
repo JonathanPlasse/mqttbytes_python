@@ -109,7 +109,7 @@ impl From<::mqttbytes::PacketType> for PacketType {
 }
 
 #[pyclass]
-#[derive(Clone, Copy)]
+#[derive(Clone)]
 pub enum Protocol {
     V4,
     V5,
@@ -136,7 +136,7 @@ impl From<Protocol> for ::mqttbytes::Protocol {
 /// Quality of service.
 #[allow(clippy::enum_variant_names)]
 #[pyclass]
-#[derive(Clone, Copy)]
+#[derive(Clone)]
 #[repr(u8)]
 pub enum QoS {
     AtMostOnce = 0,
