@@ -1,8 +1,6 @@
 use bytes::Bytes;
-use pyo3::{
-    prelude::*,
-    types::{PyByteArray, PyBytes},
-};
+use pyo3::prelude::*;
+use pyo3::types::{PyByteArray, PyBytes};
 
 use crate::convert::{wrap_packet_read, wrap_packet_write};
 use crate::{FixedHeader, Protocol, QoS, WrapperMqttBytesError};
