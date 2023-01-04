@@ -13,7 +13,7 @@ create_exception!(
     "Error during serialization and deserialization."
 );
 
-struct WrapperMqttBytesError(::mqttbytes::Error);
+pub struct WrapperMqttBytesError(::mqttbytes::Error);
 
 impl From<::mqttbytes::Error> for WrapperMqttBytesError {
     fn from(err: ::mqttbytes::Error) -> Self {
@@ -40,13 +40,13 @@ impl From<WrapperMqttBytesError> for PyErr {
 /// http://docs.oasis-open.org/mqtt/mqtt/v3.1.1/os/mqtt-v3.1.1-os.html#_Figure_2.2_-
 /// ```
 #[pyclass]
-#[derive(Clone, Copy)]
-struct FixedHeader(::mqttbytes::FixedHeader);
+#[derive(Clone)]
+pub struct FixedHeader(::mqttbytes::FixedHeader);
 
 #[pymethods]
 impl FixedHeader {
     #[new]
-    fn new(byte1: u8, remaining_len_len: usize, remaining_len: usize) -> FixedHeader {
+    fn new(byte1: u8, remaining_len_len: usize, remaining_len: usize) -> Self {
         ::mqttbytes::FixedHeader::new(byte1, remaining_len_len, remaining_len).into()
     }
 
@@ -109,16 +109,36 @@ impl From<::mqttbytes::PacketType> for PacketType {
 }
 
 #[pyclass]
-enum Protocol {
+#[derive(Clone, Copy)]
+pub enum Protocol {
     V4,
     V5,
+}
+
+impl From<::mqttbytes::Protocol> for Protocol {
+    fn from(protocol: ::mqttbytes::Protocol) -> Self {
+        match protocol {
+            ::mqttbytes::Protocol::V4 => Protocol::V4,
+            ::mqttbytes::Protocol::V5 => Protocol::V5,
+        }
+    }
+}
+
+impl From<Protocol> for ::mqttbytes::Protocol {
+    fn from(protocol: Protocol) -> Self {
+        match protocol {
+            Protocol::V4 => ::mqttbytes::Protocol::V4,
+            Protocol::V5 => ::mqttbytes::Protocol::V5,
+        }
+    }
 }
 
 /// Quality of service.
 #[allow(clippy::enum_variant_names)]
 #[pyclass]
+#[derive(Clone, Copy)]
 #[repr(u8)]
-enum QoS {
+pub enum QoS {
     AtMostOnce = 0,
     AtLeastOnce = 1,
     ExactlyOnce = 2,
@@ -130,6 +150,16 @@ impl From<::mqttbytes::QoS> for QoS {
             ::mqttbytes::QoS::AtMostOnce => QoS::AtMostOnce,
             ::mqttbytes::QoS::AtLeastOnce => QoS::AtLeastOnce,
             ::mqttbytes::QoS::ExactlyOnce => QoS::ExactlyOnce,
+        }
+    }
+}
+
+impl From<QoS> for ::mqttbytes::QoS {
+    fn from(qos: QoS) -> Self {
+        match qos {
+            QoS::AtMostOnce => ::mqttbytes::QoS::AtMostOnce,
+            QoS::AtLeastOnce => ::mqttbytes::QoS::AtLeastOnce,
+            QoS::ExactlyOnce => ::mqttbytes::QoS::ExactlyOnce,
         }
     }
 }

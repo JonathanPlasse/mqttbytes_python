@@ -3,9 +3,7 @@ use pyo3::{
     types::{PyByteArray, PyBytes},
 };
 
-use crate::convert::{
-    from_pybytearray_to_bytes_mut, from_pybytes_to_bytes, write_pybytearray_from_bytes_mut,
-};
+use crate::convert::{wrap_packet_read, wrap_packet_write};
 use crate::{FixedHeader, WrapperMqttBytesError};
 
 /// Acknowledgement to connect packet
@@ -20,25 +18,17 @@ pub struct ConnAck {
 #[pymethods]
 impl ConnAck {
     #[new]
-    fn new(code: ConnectReturnCode, session_present: bool) -> ConnAck {
+    fn new(code: ConnectReturnCode, session_present: bool) -> Self {
         ::mqttbytes::v4::ConnAck::new(code.into(), session_present).into()
     }
 
     #[staticmethod]
     fn read(fixed_header: FixedHeader, bytes: &PyBytes) -> Result<Self, WrapperMqttBytesError> {
-        let bytes = from_pybytes_to_bytes(bytes);
-        ::mqttbytes::v4::ConnAck::read(fixed_header.0, bytes)
-            .map(Into::into)
-            .map_err(Into::into)
+        wrap_packet_read(fixed_header, bytes, ::mqttbytes::v4::ConnAck::read).map(Into::into)
     }
 
     fn write(&self, buffer: &PyByteArray) -> PyResult<usize> {
-        let mut bytes = from_pybytearray_to_bytes_mut(buffer);
-        let result = ::mqttbytes::v4::ConnAck::from(self)
-            .write(&mut bytes)
-            .map_err(|err| WrapperMqttBytesError(err).into());
-        write_pybytearray_from_bytes_mut(buffer, &bytes)?;
-        result
+        wrap_packet_write(&self.into(), buffer, ::mqttbytes::v4::ConnAck::write)
     }
 }
 
