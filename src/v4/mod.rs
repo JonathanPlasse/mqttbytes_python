@@ -5,6 +5,7 @@ use connect::{Connect, LastWill, Login};
 use ping::{PingReq, PingResp};
 use puback::PubAck;
 use pubcomp::PubComp;
+use publish::Publish;
 use pubrec::PubRec;
 use pubrel::PubRel;
 
@@ -13,6 +14,7 @@ mod connect;
 mod ping;
 mod puback;
 mod pubcomp;
+mod publish;
 mod pubrec;
 mod pubrel;
 
@@ -28,6 +30,7 @@ pub fn v4(_py: Python, m: &PyModule) -> PyResult<()> {
     m.add_class::<PubComp>()?;
     m.add_class::<PubRec>()?;
     m.add_class::<PubRel>()?;
+    m.add_class::<Publish>()?;
     m.add_class::<ConnectReturnCode>()?;
     Ok(())
 }
