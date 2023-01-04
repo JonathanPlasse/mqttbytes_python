@@ -1,4 +1,3 @@
-use bytes::Bytes;
 use pyo3::prelude::*;
 use pyo3::types::{PyByteArray, PyBytes};
 
@@ -125,7 +124,7 @@ impl LastWill {
 
     #[setter]
     fn set_message(&mut self, message: Vec<u8>) {
-        self.0.message = Bytes::from(message);
+        self.0.message = message.into();
     }
 
     #[getter]

@@ -25,11 +25,11 @@ pub fn wrap_packet_write<T>(
 }
 
 pub fn from_pybytes_to_bytes(bytes: &PyBytes) -> Bytes {
-    Bytes::from(bytes.as_bytes().to_owned())
+    bytes.as_bytes().to_owned().into()
 }
 
 pub fn from_pybytearray_to_bytes_mut(bytes: &PyByteArray) -> BytesMut {
-    unsafe { BytesMut::from(bytes.as_bytes()) }
+    unsafe { bytes.as_bytes().into() }
 }
 
 pub fn write_pybytearray_from_bytes_mut(buffer: &PyByteArray, bytes: &BytesMut) -> PyResult<()> {

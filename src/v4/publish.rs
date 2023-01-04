@@ -27,6 +27,66 @@ impl Publish {
     fn write(&self, buffer: &PyByteArray) -> PyResult<usize> {
         wrap_packet_write(&self.0, buffer, ::mqttbytes::v4::Publish::write)
     }
+
+    #[getter]
+    fn get_dup(&self) -> bool {
+        self.0.dup
+    }
+
+    #[setter]
+    fn set_dup(&mut self, dup: bool) {
+        self.0.dup = dup;
+    }
+
+    #[getter]
+    fn get_qos(&self) -> QoS {
+        self.0.qos.into()
+    }
+
+    #[setter]
+    fn set_qos(&mut self, qos: QoS) {
+        self.0.qos = qos.into();
+    }
+
+    #[getter]
+    fn get_retain(&self) -> bool {
+        self.0.retain
+    }
+
+    #[setter]
+    fn set_retain(&mut self, retain: bool) {
+        self.0.retain = retain;
+    }
+
+    #[getter]
+    fn get_topic(&self) -> String {
+        self.0.topic.clone()
+    }
+
+    #[setter]
+    fn set_topic(&mut self, topic: String) {
+        self.0.topic = topic;
+    }
+
+    #[getter]
+    fn get_pkid(&self) -> u16 {
+        self.0.pkid
+    }
+
+    #[setter]
+    fn set_pkid(&mut self, pkid: u16) {
+        self.0.pkid = pkid;
+    }
+
+    #[getter]
+    fn get_payload(&self) -> Vec<u8> {
+        self.0.payload.to_vec()
+    }
+
+    #[setter]
+    fn set_payload(&mut self, payload: Vec<u8>) {
+        self.0.payload = payload.into();
+    }
 }
 
 impl From<::mqttbytes::v4::Publish> for Publish {
