@@ -116,3 +116,10 @@ impl From<::mqttbytes::v4::SubscribeFilter> for SubscribeFilter {
         Self(p)
     }
 }
+
+#[pyclass]
+pub enum RetainForwardRule {
+    OnEverySubscribe,
+    OnNewSubscribe,
+    Never,
+}
