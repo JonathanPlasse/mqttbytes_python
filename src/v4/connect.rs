@@ -4,7 +4,7 @@ use pyo3::types::{PyByteArray, PyBytes};
 use crate::convert::{wrap_packet_read, wrap_packet_write};
 use crate::{FixedHeader, Protocol, QoS, WrapperMqttBytesError};
 
-/// Connection packet initiated by the client
+/// Connection packet initiated by the client.
 #[pyclass]
 pub struct Connect(::mqttbytes::v4::Connect);
 
@@ -95,7 +95,7 @@ impl From<::mqttbytes::v4::Connect> for Connect {
     }
 }
 
-/// LastWill that broker forwards on behalf of the client
+/// LastWill that broker forwards on behalf of the client.
 #[pyclass]
 #[derive(Clone)]
 pub struct LastWill(::mqttbytes::v4::LastWill);

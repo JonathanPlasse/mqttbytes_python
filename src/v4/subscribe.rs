@@ -5,7 +5,7 @@ use pyo3::types::{PyAny, PyByteArray, PyBytes};
 use crate::convert::{wrap_packet_read, wrap_packet_write};
 use crate::{FixedHeader, QoS, WrapperMqttBytesError};
 
-/// Subscription packet
+/// Subscription packet.
 #[pyclass]
 pub struct Subscribe(::mqttbytes::v4::Subscribe);
 
@@ -74,7 +74,7 @@ impl From<::mqttbytes::v4::Subscribe> for Subscribe {
     }
 }
 
-/// Subscription filter
+/// Subscription filter.
 #[pyclass]
 #[derive(Clone)]
 pub struct SubscribeFilter(::mqttbytes::v4::SubscribeFilter);

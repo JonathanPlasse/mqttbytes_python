@@ -4,7 +4,7 @@ use pyo3::types::{PyByteArray, PyBytes};
 use crate::convert::{wrap_packet_read, wrap_packet_write};
 use crate::{FixedHeader, WrapperMqttBytesError};
 
-/// Unsubscribe packet
+/// Unsubscribe packet.
 #[pyclass]
 pub struct Unsubscribe(::mqttbytes::v4::Unsubscribe);
 

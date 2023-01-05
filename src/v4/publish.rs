@@ -4,7 +4,7 @@ use pyo3::types::{PyByteArray, PyBytes};
 use crate::convert::{wrap_packet_read, wrap_packet_write};
 use crate::{FixedHeader, QoS, WrapperMqttBytesError};
 
-/// Publish packet
+/// Publish packet.
 #[pyclass]
 pub struct Publish(::mqttbytes::v4::Publish);
 
