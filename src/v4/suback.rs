@@ -5,7 +5,7 @@ use crate::convert::{wrap_packet_read, wrap_packet_write};
 use crate::{FixedHeader, QoS, WrapperMqttBytesError};
 
 /// Acknowledgement to subscribe.
-#[pyclass]
+#[pyclass(module = "mqttbytes.v4")]
 pub struct SubAck(::mqttbytes::v4::SubAck);
 
 #[pymethods]

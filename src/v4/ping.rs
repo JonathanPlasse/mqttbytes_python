@@ -3,7 +3,7 @@ use pyo3::types::PyByteArray;
 
 use crate::convert::wrap_packet_write;
 
-#[pyclass]
+#[pyclass(module = "mqttbytes.v4")]
 pub struct PingReq(pub ::mqttbytes::v4::PingReq);
 
 #[pymethods]
@@ -24,7 +24,7 @@ impl From<::mqttbytes::v4::PingReq> for PingReq {
     }
 }
 
-#[pyclass]
+#[pyclass(module = "mqttbytes.v4")]
 pub struct PingResp(pub ::mqttbytes::v4::PingResp);
 
 #[pymethods]

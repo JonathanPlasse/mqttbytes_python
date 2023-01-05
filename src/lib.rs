@@ -39,7 +39,7 @@ impl From<WrapperMqttBytesError> for PyErr {
 ///
 /// http://docs.oasis-open.org/mqtt/mqtt/v3.1.1/os/mqtt-v3.1.1-os.html#_Figure_2.2_-
 /// ```
-#[pyclass]
+#[pyclass(module = "mqttbytes")]
 #[derive(Clone)]
 pub struct FixedHeader(::mqttbytes::FixedHeader);
 
@@ -68,7 +68,7 @@ impl From<::mqttbytes::FixedHeader> for FixedHeader {
 }
 
 /// MQTT packet type.
-#[pyclass]
+#[pyclass(module = "mqttbytes")]
 #[repr(u8)]
 enum PacketType {
     Connect = 1,
@@ -108,7 +108,7 @@ impl From<::mqttbytes::PacketType> for PacketType {
     }
 }
 
-#[pyclass]
+#[pyclass(module = "mqttbytes")]
 #[derive(Clone)]
 pub enum Protocol {
     V4,
@@ -135,7 +135,7 @@ impl From<Protocol> for ::mqttbytes::Protocol {
 
 /// Quality of service.
 #[allow(clippy::enum_variant_names)]
-#[pyclass]
+#[pyclass(module = "mqttbytes")]
 #[derive(Clone)]
 #[repr(u8)]
 pub enum QoS {

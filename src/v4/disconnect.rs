@@ -3,7 +3,7 @@ use pyo3::types::PyByteArray;
 
 use crate::convert::wrap_packet_write;
 
-#[pyclass]
+#[pyclass(module = "mqttbytes.v4")]
 pub struct Disconnect(pub ::mqttbytes::v4::Disconnect);
 
 #[pymethods]

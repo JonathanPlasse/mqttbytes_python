@@ -5,7 +5,7 @@ use crate::convert::{wrap_packet_read, wrap_packet_write};
 use crate::{FixedHeader, WrapperMqttBytesError};
 
 /// Acknowledgement to unsubscribe.
-#[pyclass]
+#[pyclass(module = "mqttbytes.v4")]
 pub struct UnsubAck(::mqttbytes::v4::UnsubAck);
 
 #[pymethods]

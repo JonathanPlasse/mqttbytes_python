@@ -6,7 +6,7 @@ use crate::convert::{wrap_packet_read, wrap_packet_write};
 use crate::{FixedHeader, QoS, WrapperMqttBytesError};
 
 /// Subscription packet.
-#[pyclass]
+#[pyclass(module = "mqttbytes.v4")]
 pub struct Subscribe(::mqttbytes::v4::Subscribe);
 
 #[pymethods]
@@ -75,7 +75,7 @@ impl From<::mqttbytes::v4::Subscribe> for Subscribe {
 }
 
 /// Subscription filter.
-#[pyclass]
+#[pyclass(module = "mqttbytes.v4")]
 #[derive(Clone)]
 pub struct SubscribeFilter(::mqttbytes::v4::SubscribeFilter);
 
@@ -117,7 +117,7 @@ impl From<::mqttbytes::v4::SubscribeFilter> for SubscribeFilter {
     }
 }
 
-#[pyclass]
+#[pyclass(module = "mqttbytes.v4")]
 pub enum RetainForwardRule {
     OnEverySubscribe,
     OnNewSubscribe,

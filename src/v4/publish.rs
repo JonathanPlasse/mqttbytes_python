@@ -5,7 +5,7 @@ use crate::convert::{wrap_packet_read, wrap_packet_write};
 use crate::{FixedHeader, QoS, WrapperMqttBytesError};
 
 /// Publish packet.
-#[pyclass]
+#[pyclass(module = "mqttbytes.v4")]
 pub struct Publish(::mqttbytes::v4::Publish);
 
 #[pymethods]

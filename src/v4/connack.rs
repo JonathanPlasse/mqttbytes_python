@@ -7,7 +7,7 @@ use crate::convert::{wrap_packet_read, wrap_packet_write};
 use crate::{FixedHeader, WrapperMqttBytesError};
 
 /// Acknowledgement to connect packet.
-#[pyclass]
+#[pyclass(module = "mqttbytes.v4")]
 pub struct ConnAck(::mqttbytes::v4::ConnAck);
 
 #[pymethods]
@@ -54,7 +54,7 @@ impl From<::mqttbytes::v4::ConnAck> for ConnAck {
 }
 
 /// Return code in connack.
-#[pyclass]
+#[pyclass(module = "mqttbytes.v4")]
 #[derive(Clone)]
 #[repr(u8)]
 pub enum ConnectReturnCode {
