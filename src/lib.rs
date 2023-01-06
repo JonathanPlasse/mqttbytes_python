@@ -213,6 +213,8 @@ fn valid_topic(topic: &str) -> bool {
 
 #[pymodule]
 fn mqttbytes(_py: Python, m: &PyModule) -> PyResult<()> {
+    let version = env!("CARGO_PKG_VERSION");
+    m.add("__version__", version)?;
     m.add_wrapped(wrap_pymodule!(v4::v4))?;
     _py.import("sys")?
         .getattr("modules")?
