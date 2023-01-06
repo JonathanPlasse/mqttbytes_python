@@ -214,6 +214,9 @@ fn valid_topic(topic: &str) -> bool {
 #[pymodule]
 fn mqttbytes(_py: Python, m: &PyModule) -> PyResult<()> {
     m.add_wrapped(wrap_pymodule!(v4::v4))?;
+    _py.import("sys")?
+        .getattr("modules")?
+        .set_item("mqttbytes.v4", m.getattr("v4")?)?;
     m.add_class::<FixedHeader>()?;
     m.add("MqttBytesError", _py.get_type::<MqttBytesError>())?;
     m.add_class::<PacketType>()?;
