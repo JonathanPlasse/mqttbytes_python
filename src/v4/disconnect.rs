@@ -1,7 +1,8 @@
+use bytes::BytesMut;
 use pyo3::prelude::*;
-use pyo3::types::PyByteArray;
+use pyo3::types::PyBytes;
 
-use crate::convert::wrap_packet_write;
+use crate::WrapperMqttBytesError;
 
 #[pyclass(module = "mqttbytes.v4")]
 pub struct Disconnect(pub ::mqttbytes::v4::Disconnect);
@@ -13,8 +14,12 @@ impl Disconnect {
         ::mqttbytes::v4::Disconnect.into()
     }
 
-    fn write(&self, buffer: &PyByteArray) -> PyResult<usize> {
-        wrap_packet_write(&self.0, buffer, ::mqttbytes::v4::Disconnect::write)
+    fn write(&self, _py: Python) -> Result<Py<PyBytes>, WrapperMqttBytesError> {
+        let mut buffer: BytesMut = BytesMut::new();
+        self.0
+            .write(&mut buffer)
+            .map_err(WrapperMqttBytesError::from)?;
+        Ok(PyBytes::new(_py, &buffer).into())
     }
 }
 

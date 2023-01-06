@@ -32,7 +32,8 @@ mod unsubscribe;
 
 /// Reads a stream of bytes and extracts next MQTT packet out of it.
 #[pyfunction]
-fn read(_py: Python, bytes: &[u8], max_size: usize) -> Result<PyObject, WrapperMqttBytesError> {
+fn read(_py: Python, bytes: Vec<u8>, max_size: usize) -> Result<PyObject, WrapperMqttBytesError> {
+    let bytes: &[u8] = &bytes;
     ::mqttbytes::v4::read(&mut bytes.into(), max_size)
         .map(|packet| match packet {
             ::mqttbytes::v4::Packet::Connect(packet) => Connect::from(packet).into_py(_py),

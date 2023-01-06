@@ -1,7 +1,7 @@
+use bytes::BytesMut;
 use pyo3::prelude::*;
-use pyo3::types::{PyByteArray, PyBytes};
+use pyo3::types::PyBytes;
 
-use crate::convert::{wrap_packet_read, wrap_packet_write};
 use crate::{FixedHeader, WrapperMqttBytesError};
 
 /// Unsubscribe packet.
@@ -16,12 +16,19 @@ impl Unsubscribe {
     }
 
     #[staticmethod]
-    fn read(fixed_header: FixedHeader, bytes: &PyBytes) -> Result<Self, WrapperMqttBytesError> {
-        wrap_packet_read(fixed_header, bytes, ::mqttbytes::v4::Unsubscribe::read).map(Into::into)
+    fn read(fixed_header: FixedHeader, bytes: Vec<u8>) -> Result<Self, WrapperMqttBytesError> {
+        ::mqttbytes::v4::Unsubscribe::read(fixed_header.0, bytes.into())
+            .map(Into::into)
+            .map_err(Into::into)
     }
 
-    fn write(&self, buffer: &PyByteArray) -> PyResult<usize> {
-        wrap_packet_write(&self.0, buffer, ::mqttbytes::v4::Unsubscribe::write)
+    // Rewrite write method to return Python bytes instead of Vec<u8>
+    fn write(&self, _py: Python) -> Result<Py<PyBytes>, WrapperMqttBytesError> {
+        let mut buffer: BytesMut = BytesMut::new();
+        self.0
+            .write(&mut buffer)
+            .map_err(WrapperMqttBytesError::from)?;
+        Ok(PyBytes::new(_py, &buffer).into())
     }
 
     #[getter]

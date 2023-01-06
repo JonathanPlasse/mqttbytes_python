@@ -3,7 +3,6 @@ use pyo3::prelude::*;
 use pyo3::types::PyBytes;
 use pyo3::{create_exception, wrap_pymodule};
 
-mod convert;
 mod v4;
 
 create_exception!(
